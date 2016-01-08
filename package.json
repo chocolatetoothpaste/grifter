@@ -1,0 +1,6 @@
+{
+  "name": "grifter",
+  "version": "0.0.1-alpha",
+  "description": "Handy container for config vars",
+  "main": "grifter.js"
+}
