@@ -19,12 +19,12 @@ window.grifter = function grifter() {
 	return new Proxy( new Grifter, {
 		get: function get(obj, name) {
 			if( typeof obj[name] === 'undefined' ) {
-		        return obj._c[name] || obj._v[name];
+				return obj._c[name] || obj._v[name];
 			}
 			else {
 				return obj[name];
 			}
-	    },
+		},
 		set: function set(obj, name, val) {
 			if( typeof obj._c[name] === 'undefined' ) {
 				obj._v[name] = val;
