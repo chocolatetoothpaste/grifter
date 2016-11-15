@@ -1,45 +1,43 @@
-(function() {
+(function(exp) {
 "use strict";
 
+var _const = {};
+var _var = {};
+
 function Grifter() {
-	this._c = {};
-	this._v = {};
 }
 
 Grifter.prototype.define = function define( c, v ) {
-	if( typeof this._c[c] === 'undefined' ) {
-		this._c[c] = v;
+	if( typeof _const[c] === 'undefined' ) {
+		_const[c] = v;
 	}
 	else {
 		throw new Error( 'Cannot redeclare constant ' + c );
 	}
 };
 
-window.grifter = function grifter() {
+function grifter() {
 	return new Proxy( new Grifter, {
 		get: function get(obj, name) {
-			if( typeof obj[name] === 'undefined' ) {
-				return obj._c[name] || obj._v[name];
-			}
-			else {
-				return obj[name];
-			}
+			return ( typeof obj[name] === 'undefined'
+				? _const[name] || _var[name]
+				: obj[name] );
 		},
 		set: function set(obj, name, val) {
-			if( typeof obj._c[name] === 'undefined' ) {
-				obj._v[name] = val;
+			if( typeof _const[name] === 'undefined' ) {
+				_var[name] = val;
 			}
 			else {
-				throw new Error( 'Cannot modify constant ' + name );
+				throw new Error( 'Property conflicts with constant: ' + name );
 			}
 		},
 		deleteProperty: function deleteProperty(obj, key) {
-			if( typeof obj._c[key] !== 'undefined' ) {
-				delete obj._c[key];
+			if( typeof _const[key] !== 'undefined' ) {
+				delete _const[key];
 			}
 
-			else if( typeof obj._v[key] !== 'undefined' ) {
-				delete obj._v[key];
+			else if( typeof _var[key] !== 'undefined' ) {
+				delete _var[key];
 			}
 
 			else {
@@ -49,4 +47,13 @@ window.grifter = function grifter() {
 	});
 };
 
-})();
+// exp = grifter;
+
+if( typeof module !== "undefined" && module.exports ) {
+	module.exports = grifter;
+}
+else {
+	window.grifter = grifter;
+}
+
+})( typeof module === 'undefined' ? (function() { window.grifter = {}; return window.grifter; })() : module.exports );
